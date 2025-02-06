@@ -36,18 +36,60 @@ This implementation provides O(n) time complexity and effectively handles
 operator precedence through the use of parentheses in the input expression.
 */
 
+import java.util.Stack;
+
 public class TwoStack {
-    Stack<String> ops  = new Stack<String>();
-    Stack<Double> vals = new Stack<Double>();
-    public double evaluate(String s){
+    Stack<String> ops  = new Stack<>();
+    Stack<Double> vals = new Stack<>();
+
+    public double evaluate(String s) {
         String[] tokens = s.split(" ");
        
-        //Loop over the tokens until you reach the end of the expression
-        //TODO
+        // Loop over the tokens until you reach the end of the expression
+        for (String token : tokens) {
+            if (token.equals("(")) {
+                // Ignore opening parentheses
+                continue;
+            } else if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/")) {
+                // Push operator onto the ops stack
+                ops.push(token);
+            } else if (token.equals(")")) {
+                // Perform calculation when encountering a closing parenthesis
+                String op = ops.pop();
+                double val = vals.pop();
 
+                if (op.equals("+")) {
+                    val = vals.pop() + val;
+                } else if (op.equals("-")) {
+                    val = vals.pop() - val;
+                } else if (op.equals("*")) {
+                    val = vals.pop() * val;
+                } else if (op.equals("/")) {
+                    val = vals.pop() / val;
+                }
+
+                // Push result back onto the vals stack
+                vals.push(val);
+            } else {
+                // It's a number, parse and push onto vals stack
+                vals.push(Double.parseDouble(token));
+            }
+        }
+
+        // The final result should be the only element left in vals stack
+        return vals.pop();
+    }
+
+    public static void main(String[] args) {
+        TwoStack calculator = new TwoStack();
+        
+        // Example expressions
+        String expr1 = "( 1 + ( ( 2 + 3 ) * ( 4 * 5 ) ) )";
+        String expr2 = "( ( 10 + 2 ) * ( 3 / ( 6 - 4 ) ) )";
+        
+        System.out.println("Result 1: " + calculator.evaluate(expr1)); // Expected output: 101.0
+        System.out.println("Result 2: " + calculator.evaluate(expr2)); // Expected output: 18.0
         
 
-
-        return vals.pop();
     }
 }
